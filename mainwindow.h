@@ -5,8 +5,6 @@
 #include <QtSerialPort/QSerialPort>
 #include <QSettings>
 
-
-
 namespace Ui {
 class MainWindow;
 }
@@ -16,24 +14,22 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
+
+    explicit MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
    // QSettings *settings= new QSettings("config.ini", QSettings::IniFormat);//("BelLab", "MySerial");
    // QSettings *settings = new QSettings("ABC","Serial");
   //  QSettings QSettings
 private slots:
-    void on_connectButton_clicked();
-    void serialRead();
 
+    void on_connectButton_clicked();
+
+    void serialRead();
 
     void on_sendButton_clicked();
 
-
-
     void on_sendButtonrn_clicked();
-
-
 
     void on_pushButton_xup_clicked();
 
@@ -97,7 +93,6 @@ private slots:
 
     void keyPressEvent( QKeyEvent * event );
 
-
     void on_pushButton_end_cycle_clicked();
 
     void on_pushButton_next_cycle_clicked();
@@ -108,13 +103,13 @@ private slots:
 
     void on_tableWidget_steps_cellClicked(int row, int column);
 
-    void on_tableWidget_steps_cellDoubleClicked(int row, int column);
+    void on_tableWidget_steps_cellDoubleClicked();
 
-    void on_tableWidget_steps_cellPressed(int row, int column);
+    void on_tableWidget_steps_cellPressed();
 
-    void on_tableWidget_steps_cellChanged(int row, int column);
+    void on_tableWidget_steps_cellChanged();
 
-    void on_tableWidget_steps_cellEntered(int row, int column);
+    void on_tableWidget_steps_cellEntered();
 
     void on_pushButton__pr_set_accel_clicked_clicked();
 
@@ -122,12 +117,9 @@ private slots:
 
     void on_pushButton_readsettings_clicked();
 
-
     void on_pushButton_writesettings_clicked();
 
 private:
-
-
 
     void serialConnect();
     void readSettings();
@@ -154,11 +146,6 @@ private:
     double x=0;
     double y=0;
     double z=0;
-
-
-
-
-
 };
 
 #endif // MAINWINDOW_H

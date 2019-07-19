@@ -9,8 +9,7 @@
 
 QT_USE_NAMESPACE
 
-
-QSettings settings("ABC","Serial");
+static QSettings settings("ABC","Serial");
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -175,8 +174,6 @@ void MainWindow::on_pushButton_ydown_clicked()
     // get_cur_coords();
 }
 
-
-
 void MainWindow::on_pushButton_zup_clicked()
 {
     //  get_cur_coords();
@@ -186,7 +183,6 @@ void MainWindow::on_pushButton_zup_clicked()
     // get_cur_coords();
 }
 
-
 void MainWindow::on_pushButton_zdown_clicked()
 {
     //get_cur_coords();
@@ -195,7 +191,6 @@ void MainWindow::on_pushButton_zdown_clicked()
     send_gcode();
     // get_cur_coords();
 }
-
 
 void MainWindow::on_pushButton_home_clicked()
 {
@@ -214,6 +209,7 @@ void MainWindow::on_pushButton_home2_clicked()
     create_gcode();
     send_gcode();*/
 }
+
 void MainWindow::send_gcode()
 {
     serial.write(gcode.toLocal8Bit());
@@ -318,7 +314,6 @@ void MainWindow::on_pushButton_cam_emul_clicked()
 void MainWindow::on_pushButton_save_pos_clicked()
 {
     QString msg;
-    static int n_drop_obj=0;
     msg = "c9\r";
     qDebug()<<msg;
     serial.write(msg.toLocal8Bit());
@@ -327,7 +322,6 @@ void MainWindow::on_pushButton_save_pos_clicked()
 void MainWindow::on_pushButton_show_array_clicked()
 {
     QString msg;
-    static int n_drop_obj=0;
     msg = "c7\r";
     qDebug()<<msg;
     serial.write(msg.toLocal8Bit());
@@ -399,7 +393,6 @@ void MainWindow::on_pushButton_pr_vac_clicked()
     n_drop_obj++;
     ui->lineEdit_n_obj->setText(QString::number(n_drop_obj));
 }
-
 
 void MainWindow::keyPressEvent( QKeyEvent * event )
 {
@@ -486,7 +479,6 @@ void MainWindow::on_pushButton_2_clicked()
     msg = "c15 0\r";
     qDebug()<<msg;
     serial.write(msg.toLocal8Bit());
-
 }
 
 void MainWindow::on_pushButton_3_clicked()
@@ -497,7 +489,6 @@ void MainWindow::on_pushButton_3_clicked()
     serial.write(msg.toLocal8Bit());*/
 
     write_myfile();
-
 }
 
 void MainWindow::addtosteptable(int n, float a, float b, float c, int f)
@@ -505,11 +496,11 @@ void MainWindow::addtosteptable(int n, float a, float b, float c, int f)
     QTableWidgetItem *itm;
     itm = new QTableWidgetItem(QString::number(n));
     ui->tableWidget_steps->setItem(n,0,itm);
-    itm = new QTableWidgetItem(QString::number(a));
+    itm = new QTableWidgetItem(QString::number(double(a)));
     ui->tableWidget_steps->setItem(n,1,itm);
-    itm = new QTableWidgetItem(QString::number(b));
+    itm = new QTableWidgetItem(QString::number(double(b)));
     ui->tableWidget_steps->setItem(n,2,itm);
-    itm = new QTableWidgetItem(QString::number(c));
+    itm = new QTableWidgetItem(QString::number(double(c)));
     ui->tableWidget_steps->setItem(n,3,itm);
     if (f == 0)
     {
@@ -552,13 +543,12 @@ void MainWindow::addtosteptable(int n, float a, float b, float c, int f)
 
 }
 
-
 void MainWindow::addtosettingtable(int n, float a)
 {
     QTableWidgetItem *itm;
     //  itm = new QTableWidgetItem(QString::number(n));
     // ui->tableWidget_settings->setItem(n,0,itm);
-    itm = new QTableWidgetItem(QString::number(a));
+    itm = new QTableWidgetItem(QString::number(double(a)));
     ui->tableWidget_settings->setItem(n,1,itm);
 }
 
@@ -570,9 +560,9 @@ void MainWindow::on_pushButton_get_table_clicked()
 void MainWindow::send_stepsrow(int n)
 {
 
-    if (ui->tableWidget_steps->item(n,1) == 0x00 ||
-            ui->tableWidget_steps->item(n,2)== 0x00  ||
-            ui->tableWidget_steps->item(n,3)== 0x00)
+    if (ui->tableWidget_steps->item(n,1) == nullptr ||
+            ui->tableWidget_steps->item(n,2)== nullptr  ||
+            ui->tableWidget_steps->item(n,3)== nullptr)
         return;
     // ui->tableWidget_steps->item(n,0)->setBackgroundColor(QColor(0,0,255,127));
     // ui->tableWidget_steps->item(n,0)->setBackgroundColor(QColor(Qt::white));
@@ -611,7 +601,7 @@ void MainWindow::send_stepsrow(int n)
         f = -1;
     }
     QString msg;
-    msg = "c16 "+QString::number(n)+"x"+QString::number(x)+"y"+QString::number(y)+"z"+QString::number(z)+"f"+QString::number(f)+"\r";
+    msg = "c16 "+QString::number(n)+"x"+QString::number(double(x))+"y"+QString::number(double(y))+"z"+QString::number(double(z))+"f"+QString::number(f)+"\r";
     //qDebug()<<msg;
     serial.write(msg.toLocal8Bit());
 }
@@ -708,18 +698,17 @@ void MainWindow::parse_data(QString str)
 
         buf = str.section(',',0,0);
         // qDebug()<<buf;
-        x = buf.toFloat();
+        x = double(buf.toFloat());
         // qDebug()<<"x:"<<x;
 
 
         buf = str.section(',',1,1);
-        y  = buf.toFloat();
+        y  = double(buf.toFloat());
         //  qDebug()<<"y:"<<y;
 
         buf = str.section(',',2,2);
-        z  = buf.toFloat();
+        z  = double(buf.toFloat());
         // qDebug()<<"z:"<<z;
-
     }
 }
 
@@ -729,42 +718,42 @@ void MainWindow::color_row(int n, int color)
     //n++;
     for (int i = 0; i<ui->tableWidget_steps->rowCount();i++)
     {
-        ui->tableWidget_steps->item(i,0)->setBackgroundColor(QColor(Qt::white));
-        ui->tableWidget_steps->item(i,1)->setBackgroundColor(QColor(Qt::white));
-        ui->tableWidget_steps->item(i,2)->setBackgroundColor(QColor(Qt::white));
-        ui->tableWidget_steps->item(i,3)->setBackgroundColor(QColor(Qt::white));
-        ui->tableWidget_steps->item(i,4)->setBackgroundColor(QColor(Qt::white));
-        if (ui->tableWidget_steps->item(i+1,1) == 0x00) break;
+        ui->tableWidget_steps->item(i,0)->setBackground(QColor(Qt::white));
+        ui->tableWidget_steps->item(i,1)->setBackground(QColor(Qt::white));
+        ui->tableWidget_steps->item(i,2)->setBackground(QColor(Qt::white));
+        ui->tableWidget_steps->item(i,3)->setBackground(QColor(Qt::white));
+        ui->tableWidget_steps->item(i,4)->setBackground(QColor(Qt::white));
+        if (ui->tableWidget_steps->item(i+1,1) == nullptr) break;
 
     }
-    if (ui->tableWidget_steps->item(n,1) == 0x00)
+    if (ui->tableWidget_steps->item(n,1) == nullptr)
     {
         return;
-        QTableWidgetItem *itm;
-        itm = new QTableWidgetItem(QString::number(n));
-        ui->tableWidget_steps->setItem(n,0,itm);
-        itm = new QTableWidgetItem(QString::number(0));
-        ui->tableWidget_steps->setItem(n,1,itm);
-        ui->tableWidget_steps->setItem(n,2,itm);
-        ui->tableWidget_steps->setItem(n,3,itm);
-        ui->tableWidget_steps->setItem(n,4,itm);
+//        QTableWidgetItem *itm;
+//        itm = new QTableWidgetItem(QString::number(n));
+//        ui->tableWidget_steps->setItem(n,0,itm);
+//        itm = new QTableWidgetItem(QString::number(0));
+//        ui->tableWidget_steps->setItem(n,1,itm);
+//        ui->tableWidget_steps->setItem(n,2,itm);
+//        ui->tableWidget_steps->setItem(n,3,itm);
+//        ui->tableWidget_steps->setItem(n,4,itm);
 
     }
     if (color == 0)
     {
-        ui->tableWidget_steps->item(n,0)->setBackgroundColor(QColor(Qt::green));
-        ui->tableWidget_steps->item(n,1)->setBackgroundColor(QColor(Qt::green));
-        ui->tableWidget_steps->item(n,2)->setBackgroundColor(QColor(Qt::green));
-        ui->tableWidget_steps->item(n,3)->setBackgroundColor(QColor(Qt::green));
-        ui->tableWidget_steps->item(n,4)->setBackgroundColor(QColor(Qt::green));
+        ui->tableWidget_steps->item(n,0)->setBackground(QColor(Qt::green));
+        ui->tableWidget_steps->item(n,1)->setBackground(QColor(Qt::green));
+        ui->tableWidget_steps->item(n,2)->setBackground(QColor(Qt::green));
+        ui->tableWidget_steps->item(n,3)->setBackground(QColor(Qt::green));
+        ui->tableWidget_steps->item(n,4)->setBackground(QColor(Qt::green));
     }
     else if (color == 1)
     {
-        ui->tableWidget_steps->item(n,0)->setBackgroundColor(QColor(0,0,255,127));
-        ui->tableWidget_steps->item(n,1)->setBackgroundColor(QColor(0,0,255,127));
-        ui->tableWidget_steps->item(n,2)->setBackgroundColor(QColor(0,0,255,127));
-        ui->tableWidget_steps->item(n,3)->setBackgroundColor(QColor(0,0,255,127));
-        ui->tableWidget_steps->item(n,4)->setBackgroundColor(QColor(0,0,255,127));
+        ui->tableWidget_steps->item(n,0)->setBackground(QColor(0,0,255,127));
+        ui->tableWidget_steps->item(n,1)->setBackground(QColor(0,0,255,127));
+        ui->tableWidget_steps->item(n,2)->setBackground(QColor(0,0,255,127));
+        ui->tableWidget_steps->item(n,3)->setBackground(QColor(0,0,255,127));
+        ui->tableWidget_steps->item(n,4)->setBackground(QColor(0,0,255,127));
     }
 }
 
@@ -772,7 +761,7 @@ void MainWindow::on_tableWidget_steps_cellClicked(int row, int column)
 {
     ui->lineEdit_n_obj->setText(QString::number(row));
     color_row(row, 1);
-    if (ui->tableWidget_steps->item(row,column) == 0x00) return;
+    if (ui->tableWidget_steps->item(row,column) == nullptr) return;
     if (column != 0) return;
     if (!ui->checkBox_debug->isChecked()) return;
     QString msg;
@@ -783,17 +772,16 @@ void MainWindow::on_tableWidget_steps_cellClicked(int row, int column)
 
 }
 
-void MainWindow::on_tableWidget_steps_cellDoubleClicked(int row, int column)
+void MainWindow::on_tableWidget_steps_cellDoubleClicked()
 {
     get_cur_coords();
 }
 
-void MainWindow::on_tableWidget_steps_cellPressed(int row, int column)
+void MainWindow::on_tableWidget_steps_cellPressed()
 {
-
 }
 
-void MainWindow::on_tableWidget_steps_cellChanged(int row, int column)
+void MainWindow::on_tableWidget_steps_cellChanged()
 {
     //   qDebug()<<"here";
     // send_row(row);
@@ -804,7 +792,7 @@ void MainWindow::on_pushButton_pr_set_accel_clicked()
 
 }
 
-void MainWindow::on_tableWidget_steps_cellEntered(int row, int column)
+void MainWindow::on_tableWidget_steps_cellEntered()
 {
 
 }
@@ -821,10 +809,8 @@ void MainWindow::on_pushButton__pr_set_accel_clicked_clicked()
     get_cur_coords();
 }
 
-
 void MainWindow::write_myfile()
 {
-
     QFile fileOut(ui->lineEdit_path_conf_file->text()); // Связываем объект с файлом fileout.txt
     if(fileOut.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -832,7 +818,7 @@ void MainWindow::write_myfile()
 
         for (int i = 0; i<100; i++)
         {
-            if (ui->tableWidget_steps->item(i,1) == 0x00) break;
+            if (ui->tableWidget_steps->item(i,1) == nullptr) break;
             writeStream << ui->tableWidget_steps->item(i,0)->text()<<','
                         << ui->tableWidget_steps->item(i,1)->text()<<','
                         << ui->tableWidget_steps->item(i,2)->text()<<','
@@ -841,9 +827,7 @@ void MainWindow::write_myfile()
         }
         fileOut.close(); // Закрываем файл
     }
-
 }
-
 
 void MainWindow::read_myfile()
 {
@@ -875,26 +859,23 @@ void MainWindow::read_myfile()
         QTableWidgetItem *itm;
         itm = new QTableWidgetItem(QString::number(n));
         ui->tableWidget_steps->setItem(n,0,itm);
-        itm = new QTableWidgetItem(QString::number(a));
+        itm = new QTableWidgetItem(QString::number(double(a)));
         ui->tableWidget_steps->setItem(n,1,itm);
-        itm = new QTableWidgetItem(QString::number(b));
+        itm = new QTableWidgetItem(QString::number(double(b)));
         ui->tableWidget_steps->setItem(n,2,itm);
-        itm = new QTableWidgetItem(QString::number(c));
+        itm = new QTableWidgetItem(QString::number(double(c)));
         ui->tableWidget_steps->setItem(n,3,itm);
         itm = new QTableWidgetItem(buf);
 
         ui->tableWidget_steps->setItem(n,4,itm);
         color_row(ui->lineEdit_n_obj->text().toInt(), 1);
-
     }
 }
-
 
 void MainWindow::on_pushButton_ReadFile_clicked()
 {
     read_myfile();
 }
-
 
 void MainWindow::on_pushButton_readsettings_clicked()
 {
@@ -915,7 +896,7 @@ void MainWindow::sendsettingrow(int n)
     float s = ui->tableWidget_settings->item(n,1)->text().toFloat();
 
     QString msg;
-    msg = "c21 "+QString::number(n)+"s"+QString::number(s)+"\r";
+    msg = "c21 "+QString::number(n)+"s"+QString::number(double(s))+"\r";
     //qDebug()<<msg;
     serial.write(msg.toLocal8Bit());
 }
